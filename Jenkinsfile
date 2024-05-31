@@ -19,7 +19,7 @@ pipeline {
                         error('Checkstyle found errors. Failing the build.')
                     }
                     // Fail the build if Checkstyle output contains 'WARN' and 'warnError' option is enabled
-                    if (mvnOutput.contains('WARN')) {
+                    if (mvnOutput.contains('[WARN]')) {
                         echo "Checkstyle found warnings. Marking the build as unstable."
                         unstable('Checkstyle found warnings. Marking the build as unstable.')
                     }
