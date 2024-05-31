@@ -2,9 +2,14 @@ pipeline {
     agent any
 
     stages {
-        stage('Step 1') {
+        stage('Checkstyle') {
             steps {
-                echo 'step 1'
+                script {
+                    // Installiere Checkstyle falls es nicht vorhanden ist
+                    sh 'if ! [ -x "$(command -v checkstyle)" ]; then echo "Checkstyle is not installed. Installing..."; sudo apt-get install -y checkstyle; fi'
+                    // Führe Checkstyle aus
+                    sh 'checkstyle -c /google_checks.xml src/main/java/**/*.java'
+                }
             }
         }
         stage('Step 2') {
