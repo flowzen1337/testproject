@@ -26,6 +26,9 @@ jobs:
         ls 
         echo "-- ls target --"
         ls "target"
+        echo "-- cat result --"
+        cat "target/checkstyle-result.xml"
+        echo "-- -- --"
         # Parse Checkstyle output and set an output variable if WARN messages are found
         if grep -q 'WARN' 'target/checkstyle-result.xml'; then
           echo "Found Warnings"
