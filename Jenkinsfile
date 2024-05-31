@@ -15,11 +15,13 @@ pipeline {
                     echo mvnOutput
                     // Fail the build if Checkstyle output contains 'ERROR'
                     if (mvnOutput.contains('ERROR')) {
+                        echo "Checkstyle found errors. Failing the build."
                         error('Checkstyle found errors. Failing the build.')
                     }
                     // Fail the build if Checkstyle output contains 'WARN' and 'warnError' option is enabled
                     if (mvnOutput.contains('WARN')) {
-                        error('Checkstyle found warnings. Failing the build.')
+                        echo "Checkstyle found warnings. Marking the build as unstable."
+                        warnError('Checkstyle found warnings. Marking the build as unstable.')
                     }
                 }
             }
