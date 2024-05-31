@@ -17,6 +17,9 @@
                     <encoding>UTF-8</encoding>
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>true</failsOnError>
+                    <failOnViolation>true</failOnViolation>
+                    <violationSeverity>warn</violationSeverity>
+                    <warnError>true</warnError>
                 </configuration>
                 <executions>
                   <execution>
@@ -28,10 +31,6 @@
                        <configLocation>checkstyle.xml</configLocation>
                        <outputFile>${project.build.directory}/checkstyle-result.xml</outputFile>
                        <outputFormat>xml</outputFormat>
-                       <failsOnError>true</failsOnError>
-                       <failOnViolation>true</failOnViolation>
-                       <violationSeverity>warn</violationSeverity>
-                       <warnError>true</warnError>
                      </configuration>
                    </execution>
                 </executions>
