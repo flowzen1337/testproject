@@ -36,9 +36,11 @@ jobs:
       if: always()
       uses: actions/github-script@v4
       with:
-        github-token: ${{ secrets.WORKFLOW_TOKEN }}
+        has_warnings: ${{ steps.parse-checkstyle.outputs.has_warnings }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const status = steps.parse-checkstyle.outputs.has_warnings === 'true' ? 'failure' : 'success';
+          const hasWarnings = core.getInput('has_warnings');
+          const status = hasWarnings === 'true' ? 'failure' : 'success';
           await github.repos.createCommitStatus({
             owner: context.repo.owner,
             repo: context.repo.repo,
@@ -47,8 +49,8 @@ jobs:
             //target_url: 'https://example.com/checkstyle-warnings',
             context: 'Checkstyle',
             description: status === 'failure' ? 'Checkstyle found warnings or errors' : 'Checkstyle passed'
-          })
-
+          });
+   
     - name: Set job status to failure if warnings/errors found
       if: steps.parse-checkstyle.outputs.has_warnings == 'true'
       run: exit 1  # This will set the job status to 'failure' if there are warnings/errors
