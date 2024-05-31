@@ -37,7 +37,7 @@ jobs:
       uses: actions/github-script@v4
       with:
         has_warnings: ${{ steps.parse-checkstyle.outputs.has_warnings }}
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+        github-token: ${{ secrets.WORKFLOW_TOKEN }}
         script: |
           const hasWarnings = core.getInput('has_warnings');
           const status = hasWarnings === 'true' ? 'failure' : 'success';
