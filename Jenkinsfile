@@ -10,8 +10,17 @@ pipeline {
         stage('Checkstyle') {
             steps {
                 script {
-                    // Checkstyle über Maven ausführen
-                    sh 'mvn checkstyle:checkstyle'
+                    def mvnCmd = 'mvn checkstyle:checkstyle'
+                    def mvnOutput = sh(script: mvnCmd, returnStdout: true).trim()
+                    echo mvnOutput
+                    // Fail the build if Checkstyle output contains 'ERROR'
+                    if (mvnOutput.contains('ERROR')) {
+                        error('Checkstyle found errors. Failing the build.')
+                    }
+                    // Fail the build if Checkstyle output contains 'WARN' and 'warnError' option is enabled
+                    if (mvnOutput.contains('WARN') && mvnOutput.contains('warnError')) {
+                        error('Checkstyle found warnings. Failing the build.')
+                    }
                 }
             }
             post {
