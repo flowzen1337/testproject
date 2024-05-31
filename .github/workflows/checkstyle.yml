@@ -25,7 +25,18 @@ jobs:
         # Parse Checkstyle output and set an output variable if WARN messages are found
         if grep -Eiq '(severity="warning"|severity="error")' 'target/checkstyle-result.xml'; then
           echo "Found Warnings/Errors"
-          grep -Ei '(severity="warning"|severity="error")' 'target/checkstyle-result.xml'
+          # Initialize an empty output variable
+          output=""
+          # Initialize a counter
+          counter=1
+          # Loop through each line of the Checkstyle output and format it
+          grep -Ei '(severity="warning"|severity="error")' 'target/checkstyle-result.xml' | while read -r line; do
+            severity=$(echo "$line" | grep -oP '(?<=severity=")[^"]*')
+            message=$(echo "$line" | grep -oP '(?<=message=")[^"]*')
+            output="${output}${counter}) ${severity} - ${message}\n"
+            counter=$((counter + 1))
+          done
+          echo "$output"
           echo "::set-output name=has_warnings::true"
         else
           echo "No Warnings found"
