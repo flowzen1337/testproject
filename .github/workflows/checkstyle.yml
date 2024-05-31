@@ -1,0 +1,25 @@
+name: Checkstyle
+
+on: [push, pull_request]
+
+jobs:
+  checkstyle:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      
+    - name: Set up JDK
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+    
+    - name: Run Checkstyle
+      run: mvn checkstyle:checkstyle --batch-mode
+
+    - name: Upload Checkstyle results
+      uses: actions/upload-artifact@v2
+      with:
+        name: checkstyle-results
+        path: target/checkstyle-result.xml
