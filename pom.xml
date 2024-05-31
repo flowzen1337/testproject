@@ -18,7 +18,7 @@
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>true</failsOnError>
                     <failOnViolation>true</failOnViolation>
-                    <violationSeverity>warn</violationSeverity>
+                    <violationSeverity>error</violationSeverity>
                     <warnError>true</warnError>
                 </configuration>
                 <executions>
