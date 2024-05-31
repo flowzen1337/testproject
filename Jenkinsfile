@@ -18,7 +18,7 @@ pipeline {
                         error('Checkstyle found errors. Failing the build.')
                     }
                     // Fail the build if Checkstyle output contains 'WARN' and 'warnError' option is enabled
-                    if (mvnOutput.contains('WARN') && mvnOutput.contains('warnError')) {
+                    if (mvnOutput.contains('WARN')) {
                         error('Checkstyle found warnings. Failing the build.')
                     }
                 }
