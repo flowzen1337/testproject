@@ -19,12 +19,17 @@
                     <failsOnError>true</failsOnError>
                 </configuration>
                 <executions>
-                    <execution>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>checkstyle</goal>
-                        </goals>
-                    </execution>
+                  <execution>
+                     <phase>verify</phase>
+                     <goals>
+                       <goal>checkstyle</goal>
+                     </goals>
+                     <configuration>
+                       <configLocation>checkstyle.xml</configLocation>
+                       <outputFile>${project.build.directory}/checkstyle-result.xml</outputFile>
+                       <outputFormat>xml</outputFormat>
+                     </configuration>
+                   </execution>
                 </executions>
             </plugin>
         </plugins>
