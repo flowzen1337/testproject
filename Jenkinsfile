@@ -1,14 +1,23 @@
 pipeline {
     agent any
 
+    tools {
+        // Nimmt an, dass du bereits Maven installiert hast
+        maven 'Maven 3.6.3' // Definiere deine Maven-Version hier
+    }
+
     stages {
         stage('Checkstyle') {
             steps {
                 script {
-                    // Installiere Checkstyle falls es nicht vorhanden ist
-                    sh 'if ! [ -x "$(command -v checkstyle)" ]; then echo "Checkstyle is not installed. Installing..."; sudo apt-get install -y checkstyle; fi'
-                    // Führe Checkstyle aus
-                    sh 'checkstyle -c /google_checks.xml src/main/java/**/*.java'
+                    // Checkstyle über Maven ausführen
+                    sh 'mvn checkstyle:checkstyle'
+                }
+            }
+            post {
+                always {
+                    // Checkstyle Bericht veröffentlichen
+                    checkstyle pattern: '**/target/checkstyle-result.xml'
                 }
             }
         }
