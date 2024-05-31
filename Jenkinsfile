@@ -42,4 +42,25 @@ pipeline {
             }
         }
     }
+
+    post {
+        always {
+            script {
+                currentBuild.result = currentBuild.result ?: 'SUCCESS'
+            }
+        }
+        failure {
+            script {
+                emailext(
+                    subject: "Jenkins Build Failed: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
+                    body: """<p>Build ${env.BUILD_NUMBER} failed in stage: ${env.STAGE_NAME}</p>
+                             <p>Job: ${env.JOB_NAME}</p>
+                             <p>Build URL: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+                             <p>Stage: ${env.STAGE_NAME}</p>
+                             <p>Result: ${currentBuild.result}</p>""",
+                    to: 'your-email@example.com'
+                )
+            }
+        }
+    }
 }
