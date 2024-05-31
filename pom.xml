@@ -28,6 +28,10 @@
                        <configLocation>checkstyle.xml</configLocation>
                        <outputFile>${project.build.directory}/checkstyle-result.xml</outputFile>
                        <outputFormat>xml</outputFormat>
+                       <failsOnError>true</failsOnError>
+                       <failOnViolation>true</failOnViolation>
+                       <violationSeverity>warn</violationSeverity>
+                       <warnError>true</warnError>
                      </configuration>
                    </execution>
                 </executions>
