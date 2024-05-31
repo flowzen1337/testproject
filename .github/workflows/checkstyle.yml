@@ -15,8 +15,35 @@ jobs:
       with:
         java-version: '11'
         distribution: 'adopt'
+
     - name: Run Checkstyle
       run: mvn checkstyle:checkstyle --batch-mode
+
+    - name: Parse Checkstyle Output
+      id: parse-checkstyle
+      run: |
+        # Parse Checkstyle output and set an output variable if WARN messages are found
+        if grep -q 'WARN' 'target/checkstyle-result.xml'; then
+          echo "::set-output name=has_warnings::true"
+        else
+          echo "::set-output name=has_warnings::false"
+        fi
+
+    - name: Decline Push/Merge on WARN
+      if: steps.parse-checkstyle.outputs.has_warnings == 'true'
+      uses: actions/github-script@v4
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          github.repos.createCommitStatus({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            sha: context.sha,
+            state: 'failure',
+            target_url: 'https://example.com/checkstyle-warnings',
+            description: 'Checkstyle found warnings. Push/Merge declined.',
+            context: 'Checkstyle'
+          })
 
     - name: Upload Checkstyle results
       uses: actions/upload-artifact@v2
