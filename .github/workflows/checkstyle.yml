@@ -22,16 +22,10 @@ jobs:
     - name: Parse Checkstyle Output
       id: parse-checkstyle
       run: |
-        echo "-- ls . --"
-        ls 
-        echo "-- ls target --"
-        ls "target"
-        echo "-- cat result --"
-        cat "target/checkstyle-result.xml"
-        echo "-- -- --"
         # Parse Checkstyle output and set an output variable if WARN messages are found
-        if grep -q 'WARN' 'target/checkstyle-result.xml'; then
-          echo "Found Warnings"
+        if grep -Eiq '(severity="warning"|severity="error")' 'target/checkstyle-result.xml'; then
+          echo "Found Warnings/Errors"
+          grep -Eiq '(severity="warning"|severity="error")' 'target/checkstyle-result.xml'
           echo "::set-output name=has_warnings::true"
         else
           echo "No Warnings found"
