@@ -16,8 +16,7 @@ pipeline {
             }
             post {
                 always {
-                    // Checkstyle Bericht veröffentlichen
-                    checkstyle pattern: '**/target/checkstyle-result.xml'
+                    archiveArtifacts artifacts: '**/target/checkstyle-result.xml', allowEmptyArchive: true
                 }
             }
         }
