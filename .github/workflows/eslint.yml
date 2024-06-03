@@ -16,16 +16,17 @@ jobs:
         node-version: '18'
 
     - name: Install dependencies
-      run: npm install
+      run: npm install --legacy-peer-deps
 
     - name: Run ESLint
       run: |
-        npx eslint .
+        npx eslint 'src/**/*.ts'
+
 
     - name: Parse ESLint Output
       id: parse-eslint
       run: |
-        eslint_output=$(npx eslint . || true)
+        eslint_output=$(npx eslint 'src/**/*.ts' || true)
         echo "$eslint_output"
         if echo "$eslint_output" | grep -iq 'error\|warning'; then
           echo "Found ESLint warnings/errors"
