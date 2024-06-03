@@ -19,16 +19,20 @@ jobs:
       run: npm install --legacy-peer-deps
 
     - name: Run ESLint
-      run: |
-        npx eslint 'src/**/*.ts'
-
-
-    - name: Parse ESLint Output
-      id: parse-eslint
+      id: run-eslint
       run: |
         eslint_output=$(npx eslint 'src/**/*.ts' || true)
         echo "$eslint_output"
-        if echo "$eslint_output" | grep -iq 'error\|warning'; then
+        echo "$eslint_output" > eslint_output.txt
+
+    - name: Check for ESLint errors or warnings
+      id: check-eslint
+      run: |
+        eslint_output=$(cat eslint_output.txt)
+        if echo "$eslint_output" | grep -iq 'no files matching the pattern'; then
+          echo "No TypeScript files found, skipping ESLint."
+          echo "::set-output name=has_warnings::false"
+        elif echo "$eslint_output" | grep -iq 'error\|warning'; then
           echo "Found ESLint warnings/errors"
           echo "::set-output name=has_warnings::true"
         else
@@ -40,7 +44,7 @@ jobs:
       if: always()
       uses: actions/github-script@v4
       with:
-        eslint_warnings: ${{ steps.parse-eslint.outputs.has_warnings }}
+        eslint_warnings: ${{ steps.check-eslint.outputs.has_warnings }}
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
           const eslintWarnings = core.getInput('eslint_warnings') === 'true';
@@ -56,5 +60,5 @@ jobs:
           });
 
     - name: Set job status to failure if warnings/errors found
-      if: steps.parse-eslint.outputs.has_warnings == 'true'
+      if: steps.check-eslint.outputs.has_warnings == 'true'
       run: exit 1
