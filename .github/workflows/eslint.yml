@@ -45,7 +45,7 @@ jobs:
       uses: actions/github-script@v4
       with:
         eslint_warnings: ${{ steps.check-eslint.outputs.has_warnings }}
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+        github-token: ${{ secrets.WORKFLOW_TOKEN }}
         script: |
           const eslintWarnings = core.getInput('eslint_warnings') === 'true';
           const status = eslintWarnings ? 'failure' : 'success';
