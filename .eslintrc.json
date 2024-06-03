@@ -1,0 +1,69 @@
+{
+    "root": true,
+    "ignorePatterns": ["projects/**/*", "dist/*", "coverage/*"],
+    "parserOptions": {
+        "ecmaVersion": 6
+    },
+    "overrides": [
+        {
+            "files": ["*.ts"],
+            "extends": [
+                "eslint:recommended",
+                "plugin:@typescript-eslint/recommended",
+                "plugin:@angular-eslint/recommended",
+                "plugin:@angular-eslint/template/process-inline-templates"
+            ],
+            "rules": {
+                "@angular-eslint/directive-selector": [
+                    "error",
+                    {
+                        "type": "attribute",
+                        "prefix": "app",
+                        "style": "camelCase"
+                    }
+                ],
+                "@angular-eslint/component-selector": [
+                    "error",
+                    {
+                        "type": "element",
+                        "prefix": "app",
+                        "style": "kebab-case"
+                    }
+                ],
+                "@typescript-eslint/explicit-member-accessibility": [
+                    "error",
+                    {
+                        "accessibility": "explicit",
+                        "overrides": {
+                            "constructors": "no-public"
+                        }
+                    }
+                ],
+                "@typescript-eslint/member-ordering": "error",
+                "max-lines": [
+                    "error",
+                    {
+                        "max": 400
+                    }
+                ],
+                "max-len": [
+                    "error",
+                    {
+                        "code": 150,
+                        "ignorePattern": "^import\\s.+\\sfrom\\s.+;$"
+                    }
+                ],
+                "semi": ["error", "always"]
+            }
+        },
+        {
+            "files": ["*.html"],
+            "extends": ["plugin:@angular-eslint/template/recommended", "plugin:@angular-eslint/template/accessibility"],
+            "rules": {}
+        },
+        {
+            "files": ["*.ts"],
+            "extends": ["plugin:@ngrx/recommended-requiring-type-checking"]
+        }
+    ]
+}
