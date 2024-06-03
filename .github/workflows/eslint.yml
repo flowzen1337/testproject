@@ -1,0 +1,64 @@
+name: ESLint
+
+on: [push, pull_request]
+
+jobs:
+  eslint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '18'
+
+    - name: Install dependencies
+      run: npm install --legacy-peer-deps
+
+    - name: Run ESLint
+      id: run-eslint
+      run: |
+        eslint_output=$(npx eslint 'src/**/*.ts' || true)
+        echo "$eslint_output"
+        echo "$eslint_output" > eslint_output.txt
+
+    - name: Check for ESLint errors or warnings
+      id: check-eslint
+      run: |
+        eslint_output=$(cat eslint_output.txt)
+        if echo "$eslint_output" | grep -iq 'no files matching the pattern'; then
+          echo "No TypeScript files found, skipping ESLint."
+          echo "::set-output name=has_warnings::false"
+        elif echo "$eslint_output" | grep -iq 'error\|warning'; then
+          echo "Found ESLint warnings/errors"
+          echo "::set-output name=has_warnings::true"
+        else
+          echo "No ESLint warnings/errors found"
+          echo "::set-output name=has_warnings::false"
+        fi
+
+    - name: Set commit status
+      if: always()
+      uses: actions/github-script@v4
+      with:
+        eslint_warnings: ${{ steps.check-eslint.outputs.has_warnings }}
+        github-token: ${{ secrets.WORKFLOW_TOKEN }}
+        script: |
+          const eslintWarnings = core.getInput('eslint_warnings') === 'true';
+          const status = eslintWarnings ? 'failure' : 'success';
+          const description = status === 'failure' ? 'ESLint found warnings/errors' : 'ESLint passed';
+          await github.repos.createCommitStatus({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            sha: context.sha,
+            state: status,
+            context: 'ESLint',
+            description: description,
+          });
+
+    - name: Set job status to failure if warnings/errors found
+      if: steps.check-eslint.outputs.has_warnings == 'true'
+      run: exit 1
