@@ -1,0 +1,59 @@
+name: ESLint
+
+on: [push, pull_request]
+
+jobs:
+  eslint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run ESLint
+      run: |
+        npx eslint .
+
+    - name: Parse ESLint Output
+      id: parse-eslint
+      run: |
+        eslint_output=$(npx eslint . || true)
+        echo "$eslint_output"
+        if echo "$eslint_output" | grep -iq 'error\|warning'; then
+          echo "Found ESLint warnings/errors"
+          echo "::set-output name=has_warnings::true"
+        else
+          echo "No ESLint warnings/errors found"
+          echo "::set-output name=has_warnings::false"
+        fi
+
+    - name: Set commit status
+      if: always()
+      uses: actions/github-script@v4
+      with:
+        eslint_warnings: ${{ steps.parse-eslint.outputs.has_warnings }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const eslintWarnings = core.getInput('eslint_warnings') === 'true';
+          const status = eslintWarnings ? 'failure' : 'success';
+          const description = status === 'failure' ? 'ESLint found warnings/errors' : 'ESLint passed';
+          await github.repos.createCommitStatus({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            sha: context.sha,
+            state: status,
+            context: 'ESLint',
+            description: description,
+          });
+
+    - name: Set job status to failure if warnings/errors found
+      if: steps.parse-eslint.outputs.has_warnings == 'true'
+      run: exit 1
