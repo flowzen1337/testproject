@@ -12,6 +12,7 @@
       "eslint-plugin-import": "^2.22.0",
       "eslint-plugin-jsdoc": "^39.0.0",
       "eslint-plugin-prefer-arrow": "^1.2.2",
-      "@ngrx/eslint-plugin": "^17.2.0"
+      "@ngrx/eslint-plugin": "^17.2.0",
+      "typescript": "^5.0.0"
     }
 }
