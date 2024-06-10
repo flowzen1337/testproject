@@ -90,10 +90,12 @@ pipeline {
 
 def recordStartTime(stageName) {
     // Metrik für Startzeit der Stage erfassen und an den Collector senden
-    sh "echo 'stage_start_time_seconds{name=\"${stageName}\"} $(date +%s.%N)' | curl -X POST -H 'Content-Type: text/plain' --data-binary @- ${env.OTEL_EXPORTER_OTLP_ENDPOINT}/metrics"
+    def stageNameValue = "${stageName}"
+    sh "echo 'stage_start_time_seconds{name=\"$stageNameValue\"} $(date +%s.%N)' | curl -X POST -H 'Content-Type: text/plain' --data-binary @- ${env.OTEL_EXPORTER_OTLP_ENDPOINT}/metrics"
 }
 
 def recordEndTime(stageName) {
     // Metrik für Endzeit der Stage erfassen und an den Collector senden
-    sh "echo 'stage_end_time_seconds{name=\"${stageName}\"} $(date +%s.%N)' | curl -X POST -H 'Content-Type: text/plain' --data-binary @- ${env.OTEL_EXPORTER_OTLP_ENDPOINT}/metrics"
+    def stageNameValue = "${stageName}"
+    sh "echo 'stage_end_time_seconds{name=\"${stageNameValue}\"} $(date +%s.%N)' | curl -X POST -H 'Content-Type: text/plain' --data-binary @- ${env.OTEL_EXPORTER_OTLP_ENDPOINT}/metrics"
 }
