@@ -92,12 +92,12 @@ def recordStartTime(stageName) {
     // Metrik für Startzeit der Stage erfassen und an den Collector senden
     def stageNameValue = "${stageName}"
     def currentTime = sh(script: 'date +%s.%N', returnStdout: true).trim()
-    sh "echo 'stage_start_time_seconds{name=\"$stageNameValue\"}  ${currentTime}' | curl -X POST -H 'Content-Type: text/plain' --data-binary @- ${env.OTEL_EXPORTER_OTLP_ENDPOINT}/metrics"
+    sh "echo 'stage_start_time_seconds{name=\"$stageNameValue\"}  ${currentTime}' | curl -X POST -H 'Content-Type: text/plain' --data-binary @- -1 ${env.OTEL_EXPORTER_OTLP_ENDPOINT}/metrics"
 }
 
 def recordEndTime(stageName) {
     // Metrik für Endzeit der Stage erfassen und an den Collector senden
     def stageNameValue = "${stageName}"
     def currentTime = sh(script: 'date +%s.%N', returnStdout: true).trim()
-    sh "echo 'stage_end_time_seconds{name=\"${stageNameValue}\"} ${currentTime}' | curl -X POST -H 'Content-Type: text/plain' --data-binary @- ${env.OTEL_EXPORTER_OTLP_ENDPOINT}/metrics"
+    sh "echo 'stage_end_time_seconds{name=\"${stageNameValue}\"} ${currentTime}' | curl -X POST -H 'Content-Type: text/plain' --data-binary @- -1 ${env.OTEL_EXPORTER_OTLP_ENDPOINT}/metrics"
 }
