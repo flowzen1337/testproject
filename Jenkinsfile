@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        OTEL_SERVICE_NAME = 'jenkins'
+        OTEL_EXPORTER_OTLP_ENDPOINT = 'http://otel-collector:4317'
+    }
+    
     tools {
         // Nimmt an, dass du bereits Maven installiert hast
         maven 'Maven 3.6.3' // Definiere deine Maven-Version hier
@@ -10,6 +15,7 @@ pipeline {
         stage('Checkstyle') {
             steps {
                 script {
+                    recordStartTime('Checkstyle')
                     def mvnCmd = 'mvn checkstyle:checkstyle'
                     def mvnOutput = sh(script: mvnCmd, returnStdout: true).trim()
                     echo mvnOutput
@@ -27,18 +33,35 @@ pipeline {
             }
             post {
                 always {
+                    recordEndTime('Checkstyle')
                     archiveArtifacts artifacts: '**/target/checkstyle-result.xml', allowEmptyArchive: true
                 }
             }
         }
         stage('Step 2') {
             steps {
-                echo 'step 2'
+                script {
+                    recordStartTime('Step 2')
+                    echo 'step 2'
+                }
+            }
+            post {
+                always {
+                    recordEndTime('Step 2')
+                }
             }
         }
         stage('Step 3') {
             steps {
-                echo 'step 3'
+                script {
+                    recordStartTime('Step 3')
+                    echo 'step 3'
+                }
+            }
+            post {
+                always {
+                    recordEndTime('Step 3')
+                }
             }
         }
     }
@@ -63,4 +86,14 @@ pipeline {
             }
         }
     }
+}
+
+def recordStartTime(stageName) {
+    // Metrik für Startzeit der Stage erfassen und an den Collector senden
+    sh "echo 'stage_start_time_seconds{name=\"${stageName}\"} $(date +%s.%N)' | curl -X POST -H 'Content-Type: text/plain' --data-binary @- ${env.OTEL_EXPORTER_OTLP_ENDPOINT}/metrics"
+}
+
+def recordEndTime(stageName) {
+    // Metrik für Endzeit der Stage erfassen und an den Collector senden
+    sh "echo 'stage_end_time_seconds{name=\"${stageName}\"} $(date +%s.%N)' | curl -X POST -H 'Content-Type: text/plain' --data-binary @- ${env.OTEL_EXPORTER_OTLP_ENDPOINT}/metrics"
 }
